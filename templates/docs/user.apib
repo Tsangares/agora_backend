@@ -1,0 +1,50 @@
+## User [/user/]
+
+### Create a User [POST /register/]
+No authorization header needs to be set for this `POST`. It is one of two endpoints that do not need the authorization header set to send data.
+
+The `data` of the `Headers` needs to be set with a `username` and `password`. The api will return a uth
+  + Parameters
+    - username (string) - the username to register the user with.
+    - password (string) - The password to register the user, it is encrypted before being stored into a database.
+  + Request (application/json)
+    + Data
+          {
+              "username": "testmoney",
+              "password": "test"
+          }
+  + Response 201 (application/json)
+    + Body
+      {
+
+      "key": "6c5fefcf4c3371389af281556ab3be1dca1897ce",
+      "resource_uri": "/api/full/register/14/"
+      "username": "testmoney"
+5
+      }
+
+### Login a user [GET /login/]
+This is a `GET` request so you are setting the params not the data in the header. W
+
+The `data` of the `Headers` needs to be set with a `username` and `password`. The api will return a uth
+  + Parameters
+    - username (string) - the username to register the user with.
+    - password (string) - The password to register the user, it is encrypted before being stored into a database.
+  + Request (application/json)
+    + Body
+          {
+              "username": "testmoney",
+              "password": "money"
+          }
+  + Response 202 (application/json)
+    + Body
+    {
+
+    "key": "6c5fefcf4c3371389af281556ab3be1dca1897ce",
+    "success": true,
+    "total_questions": 0,
+    "total_responses": 0,
+    "total_votes": 0,
+    "username": "testmoney"
+
+    }

@@ -1,0 +1,322 @@
+from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
+from tastypie import resources, fields
+from bin.models import *
+from haystack.query import SearchQuerySet
+from django.conf.urls import url
+from django.core.paginator import InvalidPage
+from tastypie.paginator import Paginator
+from tastypie.exceptions import BadRequest
+from tastypie.resources import ModelResource
+from tastypie.utils import trailing_slash
+from haystack.query import SearchQuerySet
+from django.db import IntegrityError
+from bin.auth import *
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from tastypie.http import HttpUnauthorized, HttpForbidden, HttpAccepted
+from tastypie.cache import SimpleCache
+from tastypie.bundle import Bundle
+from haystack.inputs import AutoQuery
+from tastypie.authentication import Authentication
+from django.contrib.auth.backends import ModelBackend
+import json
+from taggit.models import Tag
+
+class TagResource_min(ModelResource):
+    #items = fields.ToManyField(TaggedItemBase, "%(app_label)s_%(class)s_items")
+    def dehydrate(self, bundle):
+        bundle.data['question'] = Question.objects
+    class Meta:
+        queryset=Tag.objects.all()
+        resource_name='tag'
+        filtering={
+            "slug": ALL,
+            "name": ALL,
+        }
+
+
+class AgoraUserResourse_min(ModelResource):
+    tags = fields.ToManyField(TagResource_min, "tags", full=True, null=True)
+    username = fields.CharField(attribute = 'user__username' )
+    def dehydrate(self, bundle):
+        bundle.data['my_questions'] = bundle.obj.questions.all().__len__()
+        bundle.data['my_responses'] = bundle.obj.responses.all().__len__()
+        bundle.data['my_votes'] = bundle.obj.votes.all().__len__()
+        return bundle
+
+    class Meta:
+        resource_name='user'
+        detail_uri_name = 'user__username'
+        queryset = AgoraUser.objects.all()
+        #excludes = ['email', 'password', 'last_ip', 'lastname', 'firstname', 'phone']
+        allowed_methods = ['get', 'post']
+        authentication = AgoraAuthentication()
+        authorization = AgoraAuthorization()
+        filtering = dict(
+            tags = ALL_WITH_RELATIONS,
+        )
+        #cache = SimpleCache(timeout=60)
+    def detail_uri_kwargs(self, bundle_or_obj):
+        if isinstance(bundle_or_obj, Bundle):
+            bundle_or_obj = bundle_or_obj.obj
+        return {
+            'user__username': bundle_or_obj.user.username
+        }
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
+        ]
+    def get_search(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        # Do the query.
+        query =request.GET.get('query', '')
+        sqs = SearchQuerySet().models(AgoraUser).load_all().auto_query(query)
+        paginator = Paginator(request.GET, sqs, limit=20)
+        try:
+            page = paginator.page()
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
+
+        objects = []
+
+        for result in page['objects']:
+            bundle = self.build_bundle(obj=result.object, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+        page['meta']['query'] = query
+        object_list = {
+            'meta' : page['meta'],
+            'objects': objects,
+        }
+
+        self.log_throttled_access(request)
+        return self.create_response(request, object_list)
+
+class LoginResource(ModelResource):
+    class Meta:
+        resource_name='login'
+        excludes = ['password']
+        allowed_methods = ['get']
+        always_return_data = True
+    def get_list(self, request, **kwargs):
+
+        #data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        #data = request.META['data']
+        #raise BadRequest(request.META.get('data', 'hitler'))
+        username = None
+        password = None
+        if(self.method_check(request, allowed=['get'])):
+            username = request.GET.get('username', '')
+            password = request.GET.get('password', '')
+        else:
+            return self.create_response(request, {
+                'success': False,
+                'reason': 'could not find username and password.',
+                }, HttpForbidden )
+
+        user = authenticate(username=username, password=password)
+        if user:
+            if user.is_active:
+                login(request, user)
+                return self.create_response(request,{
+                    'key': user.api_key.key,
+                    'total_questions': user.agora_user.questions.all().__len__(),
+                    'total_responses': user.agora_user.responses.all().__len__(),
+                    'total_votes': user.agora_user.votes.all().__len__(),
+                    'username': user.username,
+                    'success': True
+                }, HttpAccepted)
+            else:
+                return self.create_response(request, {
+                    'success': False,
+                    'reason': 'disabled',
+                    }, HttpForbidden )
+        else:
+            return self.create_response(request, {
+                'success': False,
+                'reason': 'incorrect format',
+                }, HttpUnauthorized )
+class RegisterResource(ModelResource):
+    class Meta:
+        resource_name='register'
+        excludes = ['password']
+        allowed_methods = ['post']
+        always_return_data = True
+    def obj_create(self, bundle, request=None, **kwargs):
+        password = bundle.data['password']
+        username= bundle.data['username']
+        try:
+            bundle.obj = User.objects.create_user(username, '', password)
+            obj = AgoraUser.objects.create(user=bundle.obj)
+            bundle.data['key'] = bundle.obj.api_key.key
+            del bundle.data['password']
+            bundle.obj = obj
+        except IntegrityError:
+            raise BadRequest('That username already exists')
+        return bundle
+
+class ModuleResource_min(ModelResource):
+    class Meta:
+        resource_name='module'
+        queryset=Module.objects.all()
+        allowed_methods=['get','post']
+        authentication = AgoraAuthentication()
+        authorization = AgoraAuthorization()
+        #cache = SimpleCache(timeout=60)
+    def obj_create(self, bundle, request=None, **kwargs):
+        user = User.objects.get(username=bundle.request.user).agora_user
+        bundle.obj = modules.create(text=bundle.data['text'],parent_id=bundle.data['response_id'],title=bundle.data['title'])
+        return bundle
+
+class CommentResource_min(ModelResource):
+    class Meta:
+        resource_name='comment'
+        queryset=Comment.objects.all()
+        allowed_methods=['get','post']
+        authentication = AgoraAuthentication()
+        authorization = AgoraAuthorization()
+        #cache = SimpleCache(timeout=60)
+    def obj_create(self, bundle, request=None, **kwargs):
+        user = User.objects.get(username=bundle.request.user).agora_user
+        bundle.obj = comments.create(text=bundle.data['text'],parent_id=bundle.data['module_id'])
+        return bundle
+class VoteResource_min(ModelResource):
+    class Meta:
+        resource_name='vote'
+        always_return_data=True
+        queryset=Vote.objects.all()
+        allowed_methods=['get', 'post']
+        authentication = AgoraAuthentication()
+        authorization = AgoraAuthorization()
+        #cache = SimpleCache(timeout=60)
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        bundle.obj = User.objects.get(username=bundle.request.user).agora_user.votes.create(parent_id=bundle.data['response_id'])
+        return bundle
+class ResponseResourse_min(ModelResource):
+    tags = fields.ToManyField(TagResource_min, "tags", full=True, null=True)
+    def dehydrate(self, bundle):
+        date = bundle.data['date']
+        bundle.data['date'] = date.date()
+        bundle.data['time'] = date.time()
+        bundle.data['timezone'] = date.tzname()
+        bundle.data['votes'] = map((lambda obj: obj.creator.user.username), bundle.obj.votes.all())
+        return bundle
+    class Meta:
+        resource_name='response'
+        always_return_data=True
+        queryset = Response.objects.all()
+        allowed_methods = ['get', 'post']
+        authentication = AgoraAuthentication()
+        authorization = AgoraAuthorization()
+        filtering = dict(
+            tags = ALL_WITH_RELATIONS,
+        )
+        #cache = SimpleCache(timeout=60)
+    def obj_create(self, bundle, request=None, **kwargs):
+        user = User.objects.get(username=bundle.request.user)
+        bundle.obj = user.agora_user.responses.create(text=bundle.data['text'],parent_id=bundle.data['question_id'])
+        modules = bundle.data.get('modules', 'null')
+        if (modules != 'null'):
+            #modules = json.loads(modules)
+            user_id = user.id
+            for m in modules:
+                bundle.obj.modules.create(title=m['title'], text=m['text'], creator_id=user_id)
+
+        return bundle
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
+        ]
+    def get_search(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        # Do the query.
+        query =request.GET.get('query', '')
+        sqs = SearchQuerySet().models(Response).load_all().auto_query(query)
+        paginator = Paginator(request.GET, sqs, limit=20)
+        try:
+            page = paginator.page()
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
+
+        objects = []
+
+        for result in page['objects']:
+            bundle = self.build_bundle(obj=result.object, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+        page['meta']['query'] = query
+        object_list = {
+            'meta' : page['meta'],
+            'objects': objects,
+        }
+
+        self.log_throttled_access(request)
+        return self.create_response(request, object_list)
+
+class QuestionResourse_min(ModelResource):
+    tags = fields.ToManyField(TagResource_min, "tags", full=True, null=True);
+    def dehydrate(self, bundle):
+        date = bundle.data['date']
+        bundle.data['date'] = date.date()
+        bundle.data['time'] = date.time()
+        bundle.data['timezone'] = date.tzname()
+        return bundle
+    class Meta:
+        ordering = ['id', 'date', 'totalvotes', 'totalresponses', 'text']
+        resource_name='question'
+        always_return_data = True
+        queryset = Question.objects.all()
+        allowed_methods = ['get', 'post']
+        authentication = AgoraAuthentication()
+        authorization = AgoraAuthorization()
+        filtering = {"tags": ALL_WITH_RELATIONS }
+        #cache = SimpleCache(timeout=60)
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
+        ]
+    def obj_create(self, bundle, request=None, **kwargs):
+        user = User.objects.filter(username=bundle.request.user)
+        bundle.obj = user[0].agora_user.questions.create(text=bundle.data['text'])
+        t = bundle.data.get('tags', False)
+        if t:
+            tags = t.split(',')
+            for tag in tags:
+                bundle.obj.tags.add(tag)
+        return bundle
+
+    def get_search(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        # Do the query.
+        query =request.GET.get('query', '')
+        sqs = SearchQuerySet().models(Question).load_all().auto_query(query)
+        paginator = Paginator(request.GET, sqs, limit=20)
+        try:
+            page = paginator.page()
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
+
+        objects = []
+
+        for result in page['objects']:
+            bundle = self.build_bundle(obj=result.object, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+        page['meta']['query'] = query
+        object_list = {
+            'meta' : page['meta'],
+            'objects': objects,
+        }
+
+        self.log_throttled_access(request)
+        return self.create_response(request, object_list)

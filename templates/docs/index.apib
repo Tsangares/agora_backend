@@ -1,0 +1,39 @@
+FORMAT: 1A
+HOST: https://api.iex.ist/full
+
+# Agora API
+## Flavors
+### Types
+There are two main flavors to get data: `min` and `full`.
+ - `min` will return a minified response, or a summary.
+ - `full` will return a large file that has as much information as possible.
+
+### How to Use min and full
+To access the different flavors of the api, all you have to do is change `/api/full/question/` to `/api/min/question/`, in the `URL`.
+
+You can `POST` to either `min` or `full`.
+
+## Types of Objects
+Here is a list of all the objects that can be accessed with the api.
+
+- User
+Containes a username and each `question`, `response`, `module`, and `comment`, is associated with a user. The user object has a total count for each type of object attached to it.
+
+- Question
+A `question` is just a short line of text, must be associated with a `user` (the user who created the question).
+
+- Response
+A `response` is some text, and must be associated with both a `user` (the user who made the response), and a `question` (the question that this response is responding to).
+
+- Module
+A `module` is a block of text and a title. This must be associated with both a `user` (the creator of the module), and a `response` (that this module is describing).
+
+- Comment
+A `comment` is a small block of text. This must be associated with both a `user` (the user commenting), and a `module` (the module that is being commented on).
+
+<!-- include(user.apib) -->
+<!-- include(question.apib) -->
+<!-- include(response.apib) -->
+<!-- include(vote.apib) -->
+<!-- include(module.apib) -->
+<!-- include(comment.apib) -->

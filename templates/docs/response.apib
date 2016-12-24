@@ -1,0 +1,112 @@
+## Response [/response/]
+
+### Get a Collection of Responses [GET]
+
++ Parameters
+    - limit (integer, optional) - optional used to limit number of returned responses.
+    - offset (integer, optional) - used to page and get the next set of responses.
+    - tags (string, optional) - Comma demlimted string of tags to filter the responses by.
+
++ Response 200 (application/json)
+{
+
+    "meta": {
+        "limit": 2,
+        "next": "/api/full/response/?limit=2&offset=17",
+        "offset": 15,
+        "previous": "/api/full/response/?limit=2&offset=13",
+        "total_count": 158
+    },
+    "objects": [
+        {
+            "date": "2016-08-06",
+            "id": 16,
+            "modules": [ ],
+            "resource_uri": "/api/full/response/16/",
+            "tags": [ ],
+            "text": "peed my pants",
+            "time": "22:19:10",
+            "timezone": "UTC",
+            "votes": [ ]
+        },
+        {
+            "date": "2016-08-06",
+            "id": 17,
+            "modules": [ ],
+            "resource_uri": "/api/full/response/17/",
+            "tags": [ ],
+            "text": "found it",
+            "time": "22:19:11",
+            "timezone": "UTC",
+            "votes": [ ]
+        }
+    ]
+
+}
+### Get a Specific Response [GET /response/<response_id>]
+Used to get one response. All you have to do is use the given endpoind `/response/` and append the `response_id` to the end of the `URL`.
++ Response 200 (application/json)
+{
+
+    "date": "2016-08-06",
+    "id": 55,
+    "modules": [ ],
+    "resource_uri": "/api/full/response/55/",
+    "tags": [ ],
+    "text": "Ants in my eyes Johnson",
+    "time": "22:19:37",
+    "timezone": "UTC",
+    "votes": [ ]
+
+}
+
+### Create a New Response [POST]
+
+You may create your own response using this action. It takes a JSON
+object containing a response.
+
+**NOTE:**  The `Authorization` header must be set in the format: `Authorization: ApiKey <username>:<api_key>`.
++ Parameters
+  - text (string) - The text of the response.
+  - question_id (integer) - The id of the associated question.
+  - modules (string<json>, optional) - Used to add a bunch of modules. The string should be a json array, beginning with `[` and ending with `]`. Should be a list of `module` `POST` data.
++ Headers
+  Authorization: ApiKey daniel:204db7bcfafb2deb7506b89eb3b9b715b09905c8
++ Request (application/json)
+  + Data
+        {
+            "text": "This is definatly a response",
+            "question_id": 50
+            "modules": [
+              {
+                "title": "test module title",
+                "text": "text module text"
+              },
+              {
+                "title": "this is the second module title",
+                "text": "this is the second module text"
+              }
+            ]
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /responses/55
+
+    + Body
+
+    {
+
+    "date": "2016-08-06",
+    "id": 55,
+    "modules": [ ],
+    "resource_uri": "/api/full/response/55/",
+    "tags": [ ],
+    "text": "Ants in my eyes Johnson",
+    "time": "22:19:37",
+    "timezone": "UTC",
+    "votes": [ ]
+
+    }

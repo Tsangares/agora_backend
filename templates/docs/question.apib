@@ -1,0 +1,204 @@
+## Question [/question/]
+
+### Get a Collection of Questions [GET]
+
++ Parameters
+    - limit (integer, optional) - optional used to limit number of returned questions.
+    - offset (integer, optional) - used to page and get the next set of questions.
+    - order_by (string, optional) - Order the collection of questions by the possible values: `id`, `date`, `text`. **SOON:** `totalvotes`, `totalresponses`.
+    - tags (string, optional) - Comma demlimted string of tags to filter the questions by.
+    **UNTESTED:** Please let tsangares@gmail.com know if this works!
+
++ Response 200 (application/json)
+
+        {
+            "meta": {
+                "limit": 1,
+                "next": "/api/full/question/?limit=1&offset=1",
+                "offset": 0,
+                "previous": null,
+                "total_count": 78
+            },
+            "objects": [
+                {
+                    "creator": {
+                        "resource_uri": "/api/min/user/tsangares/",
+                        "theme": 0,
+                        "total_questions": 78,
+                        "total_responses": 158,
+                        "total_votes": 0,
+                        "username": "tsangares"
+                    },
+                    "date": "2016-08-06",
+                    "id": 1,
+                    "resource_uri": "/api/full/question/1/",
+                    "responses": [
+                        {
+                            "date": "2016-08-06",
+                            "id": 1,
+                            "modules": [ ],
+                            "resource_uri": "/api/full/response/1/",
+                            "tags": [ ],
+                            "text": "ooooooo oooooo",
+                            "time": "22:19:03",
+                            "timezone": "UTC",
+                            "votes": [ ]
+                        },
+                    ],
+                    "tags": [ ],
+                    "text": "Where is my mind?",
+                    "time": "22:19:02",
+                    "timezone": "UTC",
+                    "total_responses": 5
+                }
+            ]
+        }
+### Get a Specific Question [GET /question/<question_id>]
+Used to get one question. All you have to do is use the given endpoind `/question/` and append the `question_id` to the end of the `URL`.
++ Response 200 (application/json)
+{
+
+  "creator": {
+      "resource_uri": "/api/min/user/tsangares/",
+      "theme": 0,
+      "total_questions": 78,
+      "total_responses": 158,
+      "total_votes": 0,
+      "username": "tsangares"
+  },
+  "date": "2016-08-06",
+  "id": 50,
+  "resource_uri": "/api/full/question/50/",
+  "responses": [
+      {
+          "date": "2016-08-06",
+          "id": 141,
+          "modules": [ ],
+          "resource_uri": "/api/full/response/141/",
+          "tags": [ ],
+          "text": "the indescribable sensation of indulging on a habit that been quit cold turkey",
+          "time": "22:20:26",
+          "timezone": "UTC",
+          "votes": [ ]
+      },
+      {
+          "date": "2016-08-06",
+          "id": 142,
+          "modules": [ ],
+          "resource_uri": "/api/full/response/142/",
+          "tags": [ ],
+          "text": "Frank\\'s creation",
+          "time": "22:20:27",
+          "timezone": "UTC",
+          "votes": [ ]
+      }
+  ],
+  "tags": [ ],
+  "text": "What is rum ham?",
+  "time": "22:20:26",
+  "timezone": "UTC",
+  "total_responses": 2
+
+}
+
+### Create a New Question [POST]
+
+You may create your own question using this action. It takes a JSON
+object containing a question.
+
+**NOTE:** The `Authorization` header must be set in the format: `Authorization: ApiKey <username>:<api_key>`.
++ Parameters
+  - text (string) - The text of the response.
+  - tags (array<string>) - A comma delimted array of strings that represent tags for this `question`. **UNTESTED**
+
++ Headers
+  Authorization: ApiKey daniel:204db7bcfafb2deb7506b89eb3b9b715b09905c8
++ Request (application/json)
+  + Data
+        {
+            "text": "Favourite programming language?",
+            "tags": "philosophical, funny"
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /questions/2
+
+    + Body
+
+            {
+                "question": "Favourite programming language?",
+                "published_at": "2015-08-05T08:40:51.620Z",
+                "choices": [
+                    {
+                        "choice": "Swift",
+                        "votes": 0
+                    }, {
+                        "choice": "Python",
+                        "votes": 0
+                    }, {
+                        "choice": "Objective-C",
+                        "votes": 0
+                    }, {
+                        "choice": "Ruby",
+                        "votes": 0
+                    }
+                ]
+            }
+
+### Search a question [GET /question/search/]
+Used to search through the list of questions.
++ Parameters
+  + query (string) - The query string to search the database, can be a phrase.
+  + limit (integer, optional) - optional used to limit number of returned questions.
+  + offset (integer, optional) - used to page and get the next set of questions.
++ Response 200
+  + Headers
+    ContentType: application/json
+  + Body
+  {
+  "meta": {
+      "limit": 20,
+      "next": null,
+      "offset": 0,
+      "previous": null,
+      "query": "water",
+      "total_count": 1
+  },
+  "objects": [
+      {
+          "creator": {
+              "resource_uri": "/api/min/user/tsangares/",
+              "theme": 0,
+              "total_questions": 78,
+              "total_responses": 158,
+              "total_votes": 0,
+              "username": "tsangares"
+          },
+          "date": "2016-08-06",
+          "id": 48,
+          "resource_uri": "/api/full/question/48/",
+          "responses": [
+              {
+                  "date": "2016-08-06",
+                  "id": 139,
+                  "modules": [ ],
+                  "resource_uri": "/api/full/response/139/",
+                  "tags": [ ],
+                  "text": "cuz",
+                  "time": "22:20:25",
+                  "timezone": "UTC",
+                  "votes": [ ]
+              }
+          ],
+          "tags": [ ],
+          "text": "Why does water taste so good?",
+          "time": "22:20:24",
+          "timezone": "UTC",
+          "total_responses": 1
+      }
+  ]
+
+}

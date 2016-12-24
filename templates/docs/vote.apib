@@ -1,0 +1,35 @@
+## Vote [/vote/]
+
+### Submit a Vote[POST]
+
++ Parameters
+    - response_id (integer) - The response that this is voting on.
++ Headers
+  Authorization: ApiKey daniel:204db7bcfafb2deb7506b89eb3b9b715b09905c8
++ Request (application/json)
+  + Data
+        {
+            "response_id": 5
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /responses/55
+
+    + Body
+
+    {
+
+    "date": "2016-08-06",
+    "id": 55,
+    "modules": [ ],
+    "resource_uri": "/api/full/response/55/",
+    "tags": [ ],
+    "text": "Ants in my eyes Johnson",
+    "time": "22:19:37",
+    "timezone": "UTC",
+    "votes": [ ]
+
+    }

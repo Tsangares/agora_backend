@@ -1,0 +1,43 @@
+## Comment [/comment/]
+
+### Get a Collection of Comments [GET]
+
++ Parameters
+    - limit (integer, optional) - optional used to limit number of returned comments.
+    - offset (integer, optional) - used to page and get the next set of comments.
+
++ Response 200 (application/json)
+{no data to create an example.}
+### Get a Specific Comment [GET /comment/<comment_id>]
+Used to get one comment. All you have to do is use the given endpoind `/comment/` and append the `comment_id` to the end of the `URL`.
++ Response 200 (application/json)
+{no data to create an example.}
+
+### Create a New Comment [POST]
+
+You may create your own comment using this action. It takes a JSON
+object containing a comment.
+
+**NOTE:**  The `Authorization` header must be set in the format: `Authorization: ApiKey <username>:<api_key>`.
++ Parameters
+  - text (string) - The text of the comment.
+  - module_id (integer) - The id of the associated module.
++ Headers
+  Authorization: ApiKey daniel:204db7bcfafb2deb7506b89eb3b9b715b09905c8
+  ContentType: application/json
++ Request (application/json)
+  + Data
+        {
+            "text": "I hate you, this module is illogical. I think you and your whole family is stupid and deserves to die. Why don't you build yourself and brige and hang yourself from it. KYS",
+            "module_id": 5
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /comment/1
+
+    + Body
+
+    {NONE}

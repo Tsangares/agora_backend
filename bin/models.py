@@ -1,0 +1,59 @@
+# Feel free to rename the models, but don't rename db_table values or field names.
+from __future__ import unicode_literals
+from django.contrib.auth.models import User
+from django.utils import timezone
+from django.db import models
+from tastypie.models import create_api_key
+from taggit.managers import TaggableManager
+
+models.signals.post_save.connect(create_api_key, sender=User)
+
+class AgoraUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='agora_user')
+    theme = models.IntegerField(default=0)
+    tags = TaggableManager()
+    def __str__(self):
+        return "( %s ) %s" % (self.user.id, self.user.username)
+    def getusername(self):
+        return self.user.username
+
+class Question(models.Model):
+    creator = models.ForeignKey(AgoraUser, related_name='questions', null=True, on_delete=models.SET_NULL)
+    tags = TaggableManager()
+    date = models.DateTimeField(default=timezone.now)
+    text = models.TextField(null=True )
+    def __str__(self):
+        return "( %s ) %s" % (self.id, self.text)
+
+class Response(models.Model):
+    creator = models.ForeignKey(AgoraUser, related_name='responses', null=True, on_delete=models.SET_NULL)
+    parent = models.ForeignKey(Question, related_name='responses', on_delete=models.CASCADE)
+    tags = TaggableManager()
+    date = models.DateTimeField(default=timezone.now)
+    text = models.TextField(null=True )
+    def __str__(self):
+        return "( %s ) %s" % (self.id, self.text)
+
+class Module(models.Model):
+    creator = models.ForeignKey(AgoraUser, related_name='modules', null=True, on_delete=models.SET_NULL)
+    parent = models.ForeignKey(Response, related_name='modules', on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    title = models.TextField(null=True)
+    text = models.TextField(null=True)
+    def __str__(self):
+        return "( %s ) %s" % (self.id, self.text)
+
+class Comment(models.Model):
+    creator = models.ForeignKey(AgoraUser, related_name='comments', null=True, on_delete=models.SET_NULL)
+    parent = models.ForeignKey(Module, related_name='comments', on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)
+    text = models.TextField(null=True )
+    def __str__(self):
+        return "( %s ) %s" % (self.id, self.text)
+
+class Vote(models.Model):
+    date = models.DateTimeField(default=timezone.now)
+    creator = models.ForeignKey(AgoraUser, related_name='votes', null=True, on_delete=models.SET_NULL)
+    response = models.ForeignKey(Response, related_name='votes', on_delete=models.CASCADE)
+    def __str__(self):
+        return "( %s ) %s" % (self.creator, self.response)

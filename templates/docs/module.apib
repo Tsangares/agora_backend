@@ -1,0 +1,44 @@
+## Module [/module/]
+
+### Get a Collection of Modules [GET]
+
++ Parameters
+    - limit (integer, optional) - optional used to limit number of returned modules.
+    - offset (integer, optional) - used to page and get the next set of modules.
+
++ Response 200 (application/json)
+{no data to create an example.}
+### Get a Specific Module [GET /module/<module_id>]
+Used to get one module. All you have to do is use the given endpoind `/module/` and append the `module_id` to the end of the `URL`.
++ Response 200 (application/json)
+{no data to create an example.}
+
+### Create a New Module [POST]
+
+You may create your own module using this action. It takes a JSON
+object containing a module.
+
+**NOTE:**  The `Authorization` header must be set in the format: `Authorization: ApiKey <username>:<api_key>`.
++ Parameters
+  - title (string) - The title of the module.
+  - text (string) - The text of the module.
+  - response_id (integer) - The id of the associated response.
++ Headers
+  Authorization: ApiKey daniel:204db7bcfafb2deb7506b89eb3b9b715b09905c8
+  ContentType: application/json
++ Request (application/json)
+  + Data
+        {
+            "text": "This is why I think this.",
+            "response_id": 5
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /module/1
+
+    + Body
+
+    {NONE}

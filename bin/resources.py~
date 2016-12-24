@@ -1,0 +1,33 @@
+from bin.resources_min import *
+from tastypie import fields
+from taggit.models import Tag
+from tastypie.fields import ListField
+
+class TagResource(TagResource_min):
+    def dehydrate(self, bundle):
+        return super(TagResource, self).dehydrate(bundle)
+    
+class CommentResource(CommentResource_min):
+    def dehydrate(self, bundle):
+        return super(CommentResource, self).dehydrate(bundle)
+
+class ModuleResource(ModuleResource_min):
+    comments = fields.ToManyField(CommentResource, 'comments', full=True, null=True)
+
+class VoteResource(VoteResource_min):
+    def dehydrate(self, bundle):
+        return super(VoteResource, self).dehydrate(bundle)
+
+class ResponseResourse(ResponseResourse_min):
+    modules = fields.ToManyField(ModuleResource, 'modules', full=True, null=True)
+
+class QuestionResourse(QuestionResourse_min):
+    #tags = fields.ToManyField(TagResource, 'tags', full = True)
+    creator = fields.ToOneField(AgoraUserResourse_min, attribute='creator', full=True, null=True)
+    responses = fields.ToManyField(ResponseResourse, 'responses', full=True, null=True)
+    def dehydrate(self, bundle):
+        bundle.data['total_responses'] = bundle.obj.responses.all().__len__()
+        return super(QuestionResourse, self).dehydrate(bundle)
+
+class AgoraUserResourse(AgoraUserResourse_min):
+    questions = fields.ToManyField(QuestionResourse, 'questions', full=True, null=True)

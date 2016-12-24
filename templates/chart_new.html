@@ -1,0 +1,225 @@
+<html>
+<head>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+<link href="https://fonts.googleapis.com/css?family=Arvo|Josefin+Slab|Lato|PT+Sans|PT+Serif|Prociono|Prompt|Ubuntu" rel="stylesheet">
+  <style>
+  body{
+    margin: 0;
+    background-color: #EADBC4;
+    color: #5b4421;
+    background-image: url(data:image/png;base64,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);
+    align-content: center;
+  }
+  #top{
+    display: flex;
+    text-align: center;
+    align-content: center;
+  }
+  #title{
+    font-size: 2em;
+    flex-grow: 1;
+    flex-shrink: 1;
+    font-family: Arvo;
+  }
+
+  #chart-1{
+    display: block;
+    position: fixed;
+    margin: auto;
+    top: 7%;
+    height: 88%;
+    width: 96%;
+    left: 2%;
+  }
+  .selection{
+    flex-grow: 1;
+    flex-shrink: 1;
+  }
+  #buy-selection{
+  }
+  #sell-selection{
+  }
+  .in{
+    text-align: center;
+    width: 50px;
+  }
+  .subtitle{
+    display: inline-flex;
+    font-size: 1em;
+    font-family: Arvo;
+    margin-top: 7px;
+  }
+  .btn{
+    display: inline-flex;
+    background-color: #453D3F;
+    color: #f7f2ea;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-family: Prompt;
+    -webkit-user-select: none; /* Chrome/Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+ */
+  }
+  #detail{
+    position: fixed;
+    width: 100%;
+    text-align: center;
+    bottom: 2%;
+    font-family: Arvo;
+    margin: auto;
+  }
+  .dt{
+    display: inline-flex;
+  }
+  .ct-series-a .ct-line {
+    stroke-width: 1px;
+  }
+  .ct-series-b .ct-line {
+    stroke-width: 1px;
+  }
+    @media (max-width: 1000px) {
+      #chart-1{
+        height: 80%;
+        top: 15%;
+      }
+      #top{
+        top: 5px;
+      }
+    }
+    @media (max-width: 637px) {
+      #title{
+        position: fixed;
+        width: 100%;
+        text-align: center;
+        left: 0px;
+        top: 30px;
+        font-size: 1.5em;
+      }
+    }
+
+
+  </style>
+  <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.bundle.js"></script>
+  <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+</head>
+<body>
+  <div id="top">
+    <div id="buy-selection" class="selection">
+      <div class="subTitle">BUY</div>
+      <div class="btn" id="gdax_buy">GDAX</div>
+      <div class="btn" id="polo_buy">POLO</div>
+      <div class="btn" id="bter_buy">BTER</div>
+    </div>
+      <div id="title">Arbitrage</div>
+    <div id="sell-selection" class="selection">
+      <div class="btn" id="gdax_sell">GDAX</div>
+      <div class="btn" id="polo_sell">POLO</div>
+      <div class="btn" id="bter_sell">BTER</div>
+      <div class="subTitle">SELL</div>
+    </div>
+  </div>
+
+  <form id="detail">
+    <div class="dt ttitle">&nbsp;Buy&nbsp;</div>
+    <div class="dt tname" id="buy-name"></div>
+    <div class="dt ttitle">&nbsp;From&nbsp;</div>
+    <div class="dt tname" id="sell-name"></div><p class="dt">.&nbsp;</p>
+    <p class="dt"> Start: </p>
+    <input class="dt in" id="start" type="text" value="0" onchange="update()">
+    <p class="dt"> End: </p>
+    <input class="dt in " id="end" type="text" value="100" onchange="update()">
+  </form>
+  <div class="ct-chart ct-perfect" id='chart-1'></div>
+  <script>
+    {% autoescape off %}
+    var data = JSON.parse('{{ data }}');
+    {% endautoescape %}
+
+    function buildChart(start, end, bid_1, ask_1){
+        var buy_chart = [];
+        for(i = start; i < end; ++i){
+          var difference = bid_1[i].y-ask_1[i].y;
+          var profit = difference/((bid_1[i].y+ask_1[i].y)/2)*100-.50;
+          buy_chart[i] = {x: ask_1[i].x, y: profit };
+        }
+        new Chartist.Line('.ct-chart', {
+          series: [
+            {
+              name: 'chart',
+              data: buy_chart,
+            }
+          ]
+        }, {
+          series: {
+            'chart': {
+              lineSmooth: Chartist.Interpolation.simple(),
+              showPoint: false,
+              showArea: true,
+            },
+          },
+          axisY: {
+            labelInterpolationFnc: function(value) {
+              return value + '%';
+            },
+          },
+          axisX: {
+            type: Chartist.AutoScaleAxis,
+            onlyInteger: false,
+            showGrid: false,
+            showLabel: false,
+          },}
+      );
+    }
+    function update(){
+
+    }
+    bid_a = data.gdax_bid;
+    $("#sell-name").text("GDAX");
+    ask_a = data.polo_ask;
+    $("#buy-name").text("POLO");
+    ult_end = ask_a.length;
+    lower = 0;
+    upper = ult_end;
+    buildChart(lower,upper, bid_a, ask_a);
+    $("#gdax_buy").click(function(){
+      ask_a = data.gdax_ask;
+      $("#buy-name").text("GDAX");
+      buildChart(lower,upper, bid_a, ask_a);
+    });
+    $("#gdax_sell").click(function(){
+      bid_a = data.gdax_bid;
+      $("#sell-name").text("GDAX");
+      buildChart(lower,upper, bid_a, ask_a);
+    });
+    $("#polo_buy").click(function(){
+      ask_a = data.polo_ask;
+      $("#buy-name").text("POLO");
+      buildChart(lower,upper, bid_a, ask_a);
+    });
+    $("#polo_sell").click(function(){
+      bid_a = data.polo_bid;
+      $("#sell-name").text("POLO");
+      buildChart(lower,upper, bid_a, ask_a);
+    });
+    $("#bter_buy").click(function(){
+      ask_a = data.bter_ask;
+      $("#buy-name").text("BTER");
+      buildChart(lower,upper, bid_a, ask_a);
+    });
+    $("#bter_sell").click(function(){
+      bid_a = data.bter_bid;
+      $("#sell-name").text("BTER");
+      buildChart(lower,upper, bid_a, ask_a);
+    });
+    function update(){
+      start = parseInt($("#start").value())/100;
+      end = parseInt($("#end").value())/100;
+      length = bid_a.length();
+      s = Math.floor(length*start);
+      e = Math.ceil(length*end);
+      buildChart(s,e, bid_a, ask_a);
+    }
+  </script>
+</body>
+</html>
