@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'iurc7(@ugs9&+-77$$cnlr%@kbwy8jq!ru%ab*j0es3mo5ehbf'
+SECRET_KEY = 'iurc7(@ugs9&+-77$$cnlr%@kbwy8jq!ru%ab*j0ORISTENRISETes3mo5ehbf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -47,13 +47,13 @@ INSTALLED_APPS = [
 
 MIN_PASSWORD_LENGTH = 2
 
-MIDDLEWARE_CLASSES = [
-    'django.middleware.security.SecurityMiddleware',
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -88,14 +88,13 @@ WSGI_APPLICATION = 'agora.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
         'NAME': 'agora',
         'USER':'agora',
-        'PASSWORD':'W86yhp8LnMAG',
-        #'USER':'outsider',
-        #'PASSWORD':'9QxFRdu3adEq',
-        #'OPTIONS': "SET sql_mode='STRICT_TRANS_TABLES'"
+        'PASSWORD':'skssjHkraoV8ZuLqy6CeUmsMqsKajbVKnSCaF',
     }
 }
+
 SITE_ID = 3
 HAYSTACK_CONNECTIONS = {
     'default': {

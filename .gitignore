@@ -2,3 +2,5 @@ settings.py
 __pycache__
 *~
 rebuilddatabase.py
+agora/settings.py
+env/

@@ -88,11 +88,13 @@ WSGI_APPLICATION = 'agora.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'FILL',
         'NAME': 'FILL',
         'USER':'FILL',
-        'PASSWORD':'FIIL',
+        'PASSWORD':'FILL',
     }
 }
+
 SITE_ID = 3
 HAYSTACK_CONNECTIONS = {
     'default': {
@@ -120,8 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 AUTHENTICATION_BACKENDS = (
-    'tastypie_user.auth_backends.ApiKeyBackend',
-    'tastypie_user.auth_backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
     )
 TASTYPIE_USER_CREATION_FORM='django.contrib.auth.forms.UserCreationForm'

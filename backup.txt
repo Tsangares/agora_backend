@@ -1,0 +1,12 @@
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'NAME': 'agora',
+        'USER':'agora',
+        'PASSWORD':'skssjHkraoV8ZuLqy6CeUmsMqsKajbVKnSCaF',
+    }
+}
+
+"""
