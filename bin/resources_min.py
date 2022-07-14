@@ -2,7 +2,7 @@ from tastypie.resources import ModelResource, ALL_WITH_RELATIONS, ALL
 from tastypie import resources, fields
 from bin.models import *
 from haystack.query import SearchQuerySet
-from django.conf.urls import url
+from django.urls import re_path
 from django.core.paginator import InvalidPage
 from tastypie.paginator import Paginator
 from tastypie.exceptions import BadRequest
@@ -25,7 +25,7 @@ from taggit.models import Tag
 class TagResource_min(ModelResource):
     class Meta:
         queryset=Question.objects.values('tags', 'id')
-    #        queryset=Question.objects.values('tags__slug')
+        #queryset=Question.objects.values('tags__slug')
 
 
     '''        resource_name='tag'
@@ -76,7 +76,7 @@ class AgoraUserResourse_min(ModelResource):
         }
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
+            re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
         ]
     def get_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
@@ -110,6 +110,7 @@ class AgoraUserResourse_min(ModelResource):
 class LoginResource(ModelResource):
     class Meta:
         resource_name='login'
+        queryset = AgoraUser.objects.all()        
         excludes = ['password']
         allowed_methods = ['get']
         always_return_data = True
@@ -154,6 +155,7 @@ class LoginResource(ModelResource):
 class RegisterResource(ModelResource):
     class Meta:
         resource_name='register'
+        queryset = AgoraUser.objects.all()
         excludes = ['password']
         allowed_methods = ['post']
         always_return_data = True
@@ -241,7 +243,7 @@ class ResponseResourse_min(ModelResource):
         return bundle
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
+            re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
         ]
     def get_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
@@ -292,7 +294,7 @@ class QuestionResourse_min(ModelResource):
         #cache = SimpleCache(timeout=60)
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
+            re_path(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, '/'), self.wrap_view('get_search'), name="api_get_search"),
         ]
     def obj_create(self, bundle, request=None, **kwargs):
         user = User.objects.filter(username=bundle.request.user)

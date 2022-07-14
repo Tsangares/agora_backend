@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'iurc7(@ugs9&+-77$$cnlRSITOEONRISENTOERShbf'
+SECRET_KEY = 'FILL'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -88,11 +88,9 @@ WSGI_APPLICATION = 'agora.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'agora',
-        'USER':'agora',
-        'PASSWORD':'skssjHkraoV8ZuLqy6CeUmsMqsKajbVKnSCaF',
-        #'USER':'outsider',
-        #'PASSWORD':'9QxFRdu3adEq',
+        'NAME': 'FILL',
+        'USER':'FILL',
+        'PASSWORD':'FIIL',
     }
 }
 SITE_ID = 3

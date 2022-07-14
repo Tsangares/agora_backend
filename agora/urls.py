@@ -1,4 +1,4 @@
-from django.conf.urls import url, include
+from django.urls import  include,re_path
 from django.contrib import admin
 from bin.views import *
 from django.contrib.auth.models import User
@@ -27,12 +27,12 @@ min_api.register(CommentResource_min())
 min_api.register(TagResource_min())
 min_api.register(LoginResource())
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^', include(full_api.urls)),
-    url(r'^', include(min_api.urls)),
-    url(r'^search/', include('haystack.urls')),
-    url(r'^accounts/login/$', auth_views.login, {'template_name': 'login.html'}, name='login'),
-    url(r'^doc/$', doc),
-    url(r'^chart$', chart),
-    url(r'^chart/new$', chartnew),
+    re_path(r'^admin/', admin.site.urls),
+    re_path(r'^', include(full_api.urls)),
+    re_path(r'^', include(min_api.urls)),
+    re_path(r'^search/', include('haystack.urls')),
+    re_path(r'^accounts/login/$', auth_views.LoginView.as_view(), {'template_name': 'login.html'}, name='login'),
+    re_path(r'^doc/$', doc),
+    re_path(r'^chart$', chart),
+    re_path(r'^chart/new$', chartnew),
 ]
